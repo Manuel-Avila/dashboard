@@ -3,11 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-    hola
+    <main class="dashboard">
+        <h1>Estadísticas del Cementerio</h1>
+        
+        <div class="chart-container">
+            <h2>Difuntos por Mes</h2>
+            <canvas id="deceasedByMonthChart"></canvas>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="./js/index.js"></script>
 </body>
 </html>
