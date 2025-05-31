@@ -9,10 +9,38 @@
 <body>
     <main class="dashboard">
         <h1>Estadísticas del Cementerio</h1>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total de Difuntos</h3>
+                <p id="total-deceased">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Año con Más Defunciones</h3>
+                <p id="max-year">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Año con Menos Defunciones</h3>
+                <p id="min-year">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Mes con Más Defunciones</h3>
+                <p id="max-month">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Mes con Menos Defunciones</h3>
+                <p id="min-month">-</p>
+            </div>
+        </div>
         
         <div class="chart-container">
             <h2>Difuntos por Mes</h2>
             <canvas id="deceasedByMonthChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2>Difuntos por Año</h2>
+            <canvas id="deceasedByYearChart"></canvas>
         </div>
     </main>
     

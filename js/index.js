@@ -1,4 +1,4 @@
-import { getGraves, getDeceased, getBlocks, getOwners, getRepairs, getVisits, getLogs, getUsers } from './getData.js';
+import { getDeceased } from './getData.js';
 
 function processDeceasedByMonth(deceasedData) {
     const monthlyCounts = new Array(12).fill(0);
@@ -83,19 +83,150 @@ function createDeceasedByMonthChart(monthlyData) {
     });
 }
 
+function processDeceasedByYear(deceasedData) {
+    const yearCounts = {};
+    
+    deceasedData.forEach(person => {
+        if (person.deathDate) {
+            try {
+                const deathDate = new Date(person.deathDate);
+                if (!isNaN(deathDate.getTime())) {
+                    const year = deathDate.getFullYear();
+                    yearCounts[year] = (yearCounts[year] || 0) + 1;
+                }
+            } catch (e) {
+                console.error('Error al procesar fecha:', person.deathDate, e);
+            }
+        }
+    });
+    
+    const sortedYears = Object.keys(yearCounts).sort();
+    const counts = sortedYears.map(year => yearCounts[year]);
+    
+    return {
+        years: sortedYears,
+        counts: counts
+    };
+}
+
+function createDeceasedByYearChart(yearData) {
+    const ctx = document.getElementById('deceasedByYearChart').getContext('2d');
+    
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: yearData.years,
+            datasets: [{
+                label: 'Número de Difuntos',
+                data: yearData.counts,
+                backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad de Difuntos'
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Año'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribución de Difuntos por Año',
+                    font: {
+                        size: 16
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} difunto(s)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function calculateStatistics(deceased, monthlyCounts, yearData) {
+    const totalDeceased = deceased.length;
+    
+    let maxYear = { year: '', count: 0 };
+    let minYear = { year: '', count: Infinity };
+    
+    yearData.years.forEach((year, index) => {
+        const count = yearData.counts[index];
+        if (count > maxYear.count) {
+            maxYear = { year, count };
+        }
+        if (count < minYear.count) {
+            minYear = { year, count };
+        }
+    });
+    
+    const months = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    
+    let maxMonth = { month: '', count: 0 };
+    let minMonth = { month: '', count: Infinity };
+    
+    monthlyCounts.forEach((count, index) => {
+        if (count > maxMonth.count) {
+            maxMonth = { month: months[index], count };
+        }
+        if (count < minMonth.count) {
+            minMonth = { month: months[index], count };
+        }
+    });
+    
+    return {
+        totalDeceased,
+        maxYear,
+        minYear,
+        maxMonth,
+        minMonth
+    };
+}
+
+function updateStatsCards(stats) {
+    document.getElementById('total-deceased').textContent = stats.totalDeceased;
+    document.getElementById('max-year').textContent = `${stats.maxYear.year} (${stats.maxYear.count})`;
+    document.getElementById('min-year').textContent = `${stats.minYear.year} (${stats.minYear.count})`;
+    document.getElementById('max-month').textContent = `${stats.maxMonth.month} (${stats.maxMonth.count})`;
+    document.getElementById('min-month').textContent = `${stats.minMonth.month} (${stats.minMonth.count})`;
+}
+
 async function main() {
     const deceased = await getDeceased();
-    const graves = await getGraves();
-    const blocks = await getBlocks();
-    const owners = await getOwners();
-    const repairs = await getRepairs();
-    const visits = await getVisits();
-    const logs = await getLogs();
-    const users = await getUsers();
 
     const monthlyCounts = processDeceasedByMonth(deceased);
-
     createDeceasedByMonthChart(monthlyCounts);
+
+    const yearData = processDeceasedByYear(deceased);
+    createDeceasedByYearChart(yearData);
+
+    const stats = calculateStatistics(deceased, monthlyCounts, yearData);
+    updateStatsCards(stats);
 }
 
 document.addEventListener('DOMContentLoaded', main);
