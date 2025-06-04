@@ -36,8 +36,8 @@ function createDeceasedByMonthChart(monthlyData) {
             datasets: [{
                 label: 'Número de Difuntos',
                 data: monthlyData,
-                backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgb(163, 53, 156)',
+                borderColor: 'rgb(163, 53, 156)',
                 borderWidth: 1
             }]
         },
@@ -119,8 +119,8 @@ function createDeceasedByYearChart(yearData) {
             datasets: [{
                 label: 'Número de Difuntos',
                 data: yearData.counts,
-                backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                borderColor: 'rgba(153, 102, 255, 1)',
+                backgroundColor: 'rgb(163, 53, 156)',
+                borderColor: 'rgb(163, 53, 156)',
                 borderWidth: 1
             }]
         },
@@ -209,11 +209,27 @@ function calculateStatistics(deceased, monthlyCounts, yearData) {
 }
 
 function updateStatsCards(stats) {
-    document.getElementById('total-deceased').textContent = stats.totalDeceased;
-    document.getElementById('max-year').textContent = `${stats.maxYear.year} (${stats.maxYear.count})`;
-    document.getElementById('min-year').textContent = `${stats.minYear.year} (${stats.minYear.count})`;
-    document.getElementById('max-month').textContent = `${stats.maxMonth.month} (${stats.maxMonth.count})`;
-    document.getElementById('min-month').textContent = `${stats.minMonth.month} (${stats.minMonth.count})`;
+    document.getElementById('total-deceased').innerHTML = `<span class="highlight-year">${stats.totalDeceased}</span>`;
+
+    document.getElementById('max-year').innerHTML = `
+        <span class="highlight-year">${stats.maxYear.year}</span>
+        <span class="highlight-count">(${stats.maxYear.count})</span>
+    `;
+
+    document.getElementById('min-year').innerHTML = `
+        <span class="highlight-year">${stats.minYear.year}</span>
+        <span class="highlight-count">(${stats.minYear.count})</span>
+    `;
+
+    document.getElementById('max-month').innerHTML = `
+        <span class="highlight-year">${stats.maxMonth.month}</span>
+        <span class="highlight-count">(${stats.maxMonth.count})</span>
+    `;
+
+    document.getElementById('min-month').innerHTML = `
+        <span class="highlight-year">${stats.minMonth.month}</span>
+        <span class="highlight-count">(${stats.minMonth.count})</span>
+    `;
 }
 
 async function main() {
